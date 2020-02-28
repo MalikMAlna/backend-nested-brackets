@@ -8,8 +8,15 @@ __author__ = """Watch Demo of Nested Brackets
                 and valid parenthesis"""
 
 import sys
-openers = ["(*", "(", "[", "{", "<"]
-closers = ["*)", ")", "]", "}", ">"]
+
+bracket_pair_dict = {"*)": "(*",
+                     ")": "(",
+                     "]": "[",
+                     "}": "{",
+                     ">": "<"}
+
+bracket_list = sorted(bracket_pair_dict.keys() +
+                      bracket_pair_dict.values(), key=len, reverse=True)
 
 
 def is_nested(line):
@@ -17,17 +24,16 @@ def is_nested(line):
     count = 0
     while line:
         token = line[0]
-        if line.startswith("(*"):
-            token = "(*"
-        elif line.startswith("*)"):
-            token = "*)"
+        for b in bracket_list:
+            if line.startswith(b):
+                token = b
+                break
         count += 1
         line = line[len(token):]
-        if token in openers:
+        if token in bracket_pair_dict.values():
             stack.append(token)
-        elif token in closers:
-            closer_index = closers.index(token)
-            expected_opener = openers[closer_index]
+        elif token in bracket_pair_dict.keys():
+            expected_opener = bracket_pair_dict[token]
             if stack.pop() != expected_opener:
                 return "NO " + str(count)
     if stack:
